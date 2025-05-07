@@ -2,7 +2,8 @@ const { Telegraf } = require("telegraf");
 const axios = require("axios");
 require("dotenv").config();
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
+const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+
 
 bot.start((ctx) => {
   ctx.reply("Привет! Нажми кнопку ниже, чтобы создать заявку.", {

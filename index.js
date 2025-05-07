@@ -4,7 +4,7 @@ require("dotenv").config();
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-// Кнопка с Web App (работает только в личке!)
+// Кнопка Web App (только в личке!)
 bot.start((ctx) => {
   if (ctx.chat.type !== "private") {
     return ctx.reply("Пожалуйста, используйте бота в личном чате.");
@@ -25,7 +25,6 @@ bot.start((ctx) => {
     }
   });
 });
-
 
 // Обработка данных из Web App
 bot.on("web_app_data", async (ctx) => {
@@ -53,20 +52,22 @@ bot.on("web_app_data", async (ctx) => {
     const reply = response.data.choices[0].message.content;
     await ctx.reply(`Ответ от OpenAI:\n\n${reply}`);
   } catch (err) {
-    console.error(err);
+    console.error("Ошибка при запросе в OpenAI:", err);
     ctx.reply("Произошла ошибка при обращении к OpenAI.");
   }
 });
 
-// Запуск бота
-bot.launch();
-console.log("Бот запущен");
+// Запуск
+bot.launch().catch((err) => {
+  console.error("Ошибка при запуске бота:", err.description || err.message);
+});
 
-// Обработка ошибок
+// Общий обработчик ошибок
 bot.catch((err, ctx) => {
-  console.error("Произошла ошибка при обработке обновления:", err);
+  console.error("Ошибка при обработке обновления:", err);
   if (ctx?.reply) {
     ctx.reply("Произошла непредвиденная ошибка. Попробуйте ещё раз.");
   }
 });
+
 

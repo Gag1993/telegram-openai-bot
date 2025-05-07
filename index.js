@@ -31,8 +31,8 @@ bot.hears("📝 Создать заявку", async (ctx) => {
       });
 
       const reply = response.data.choices[0].message.content;
-      ctx2.reply("Ответ от OpenAI:
-" + reply);
+      ctx2.reply(`Ответ от OpenAI: ${reply}`);
+
     } catch (err) {
       console.error(err);
       ctx2.reply("Произошла ошибка при обращении к OpenAI.");

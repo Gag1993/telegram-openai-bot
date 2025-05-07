@@ -6,27 +6,26 @@ const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 // Кнопка с Web App (работает только в личке!)
 bot.start((ctx) => {
-  // Проверяем, что это личный чат (иначе Web App не сработает)
   if (ctx.chat.type !== "private") {
     return ctx.reply("Пожалуйста, используйте бота в личном чате.");
   }
 
   ctx.reply("Привет! Нажми кнопку ниже, чтобы создать заявку.", {
     reply_markup: {
-      keyboard: [
+      inline_keyboard: [
         [
           {
             text: "📝 Создать заявку",
             web_app: {
-              url: "https://telegram-webapp-j8de.onrender.com" // ← твоя Web App форма
+              url: "https://telegram-webapp-j8de.onrender.com"
             }
           }
         ]
-      ],
-      resize_keyboard: true
+      ]
     }
   });
 });
+
 
 // Обработка данных из Web App
 bot.on("web_app_data", async (ctx) => {

@@ -15,7 +15,7 @@ app.use(bot.webhookCallback("/bot"));
 bot.telegram.setWebhook(`${process.env.RENDER_EXTERNAL_URL}/bot`);
 
 
-// Команда /start
+// 👉 Команда /start в ЛИЧНОМ чате (оставляем как есть)
 bot.start((ctx) => {
   if (ctx.chat.type !== "private") return ctx.reply("Пожалуйста, используйте бота в личном чате.");
   ctx.reply("Привет! Нажми кнопку ниже, чтобы создать заявку.", {
@@ -24,6 +24,16 @@ bot.start((ctx) => {
     },
   });
 });
+
+// 👉 Команда /startapp для ГРУППЫ — WebApp запускается тут!
+bot.command("startapp", (ctx) => {
+  ctx.reply("Нажмите кнопку ниже, чтобы открыть форму:", {
+    reply_markup: {
+      inline_keyboard: [[{ text: "📝 Открыть форму", web_app: { url: process.env.WEB_APP_URL } }]],
+    },
+  });
+});
+
 
 // Обработка Web App данных
 bot.on("web_app_data", async (ctx) => {

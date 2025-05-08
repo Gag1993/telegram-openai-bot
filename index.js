@@ -7,35 +7,47 @@ const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 const app = express();
 
 app.use(express.json());
-
-// Webhook endpoint для Telegram
 app.use(bot.webhookCallback("/bot"));
-
-// Установка webhook (только один раз нужно, или в коде ниже)
 bot.telegram.setWebhook(`${process.env.RENDER_EXTERNAL_URL}/bot`);
 
-
-// 👉 Команда /start в ЛИЧНОМ чате (оставляем как есть)
+// ✅ Обработка команды /start и /startapp
 bot.start((ctx) => {
-  if (ctx.chat.type !== "private") return ctx.reply("Пожалуйста, используйте бота в личном чате.");
-  ctx.reply("Привет! Нажми кнопку ниже, чтобы создать заявку.", {
+  const isPrivate = ctx.chat.type === "private";
+  const text = ctx.message?.text;
+
+  // Если это команда /startapp в группе
+  if (!isPrivate && text === "/startapp") {
+    return ctx.reply("Нажмите кнопку, чтобы открыть форму:", {
+      reply_markup: {
+        inline_keyboard: [[
+          {
+            text: "📝 Открыть форму",
+            web_app: { url: process.env.WEB_APP_URL }
+          }
+        ]]
+      }
+    });
+  }
+
+  // Если бот используется в группе не по назначению
+  if (!isPrivate) {
+    return ctx.reply("Пожалуйста, используйте бота в личном чате.");
+  }
+
+  // Старт в личном чате
+  ctx.reply("Привет! Нажми кнопку ниже, чтобы создать заявку:", {
     reply_markup: {
-      inline_keyboard: [[{ text: "📝 Создать заявку", web_app: { url: process.env.WEB_APP_URL } }]],
-    },
+      inline_keyboard: [[
+        {
+          text: "📝 Создать заявку",
+          web_app: { url: process.env.WEB_APP_URL }
+        }
+      ]]
+    }
   });
 });
 
-// 👉 Команда /startapp для ГРУППЫ — WebApp запускается тут!
-bot.command("startapp", (ctx) => {
-  ctx.reply("Нажмите кнопку ниже, чтобы открыть форму:", {
-    reply_markup: {
-      inline_keyboard: [[{ text: "📝 Открыть форму", web_app: { url: process.env.WEB_APP_URL } }]],
-    },
-  });
-});
-
-
-// Обработка Web App данных
+// ✅ Обработка данных из WebApp
 bot.on("web_app_data", async (ctx) => {
   const userMessage = ctx.webAppData?.data;
   if (!userMessage || userMessage.trim() === "") return ctx.reply("Пустое сообщение.");
@@ -51,6 +63,7 @@ bot.on("web_app_data", async (ctx) => {
         "Content-Type": "application/json",
       },
     });
+
     const reply = response.data.choices[0].message.content;
     await ctx.reply(`Ответ от OpenAI:\n\n${reply}`);
   } catch (err) {
@@ -59,7 +72,7 @@ bot.on("web_app_data", async (ctx) => {
   }
 });
 
-// Слушаем порт Render (PORT — системная переменная)
+// ✅ Запуск сервера
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Webhook сервер слушает порт ${PORT}`);

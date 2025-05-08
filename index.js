@@ -12,7 +12,8 @@ app.use(express.json());
 app.use(bot.webhookCallback("/bot"));
 
 // Установка webhook (только один раз нужно, или в коде ниже)
-bot.telegram.setWebhook(`${process.env.WEB_APP_URL}/bot`);
+bot.telegram.setWebhook(`${process.env.RENDER_EXTERNAL_URL}/bot`);
+
 
 // Команда /start
 bot.start((ctx) => {

@@ -10,14 +10,23 @@ app.use(express.json());
 app.use(bot.webhookCallback("/bot"));
 bot.telegram.setWebhook(`${process.env.RENDER_EXTERNAL_URL}/bot`);
 
-// ✅ Обработка команды /start и /startapp
+// ✅ Команда /start — и для лички, и для группы
 bot.start((ctx) => {
-  const isPrivate = ctx.chat.type === "private";
-  const text = ctx.message?.text;
-
-  // Если это команда /startapp в группе
-  if (!isPrivate && text === "/startapp") {
-    return ctx.reply("Нажмите кнопку, чтобы открыть форму:", {
+  if (ctx.chat.type === "private") {
+    // В личном чате
+    return ctx.reply("Привет! Нажми кнопку ниже, чтобы создать заявку:", {
+      reply_markup: {
+        inline_keyboard: [[
+          {
+            text: "📝 Создать заявку",
+            web_app: { url: process.env.WEB_APP_URL }
+          }
+        ]]
+      }
+    });
+  } else {
+    // В группе
+    return ctx.reply("Нажмите кнопку ниже, чтобы открыть форму:", {
       reply_markup: {
         inline_keyboard: [[
           {
@@ -28,18 +37,15 @@ bot.start((ctx) => {
       }
     });
   }
+});
 
-  // Если бот используется в группе не по назначению
-  if (!isPrivate) {
-    return ctx.reply("Пожалуйста, используйте бота в личном чате.");
-  }
-
-  // Старт в личном чате
-  ctx.reply("Привет! Нажми кнопку ниже, чтобы создать заявку:", {
+// ✅ Отдельная команда /startapp — тоже для группы
+bot.command("startapp", (ctx) => {
+  return ctx.reply("Нажмите кнопку ниже, чтобы открыть форму:", {
     reply_markup: {
       inline_keyboard: [[
         {
-          text: "📝 Создать заявку",
+          text: "📝 Открыть форму",
           web_app: { url: process.env.WEB_APP_URL }
         }
       ]]

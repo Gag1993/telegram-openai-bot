@@ -28,27 +28,31 @@ bot.start((ctx) => {
     // В группе
     return ctx.reply("Нажмите кнопку ниже, чтобы открыть форму:", {
       reply_markup: {
-        inline_keyboard: [[
+        keyboard: [[
           {
             text: "📝 Открыть форму",
             web_app: { url: process.env.WEB_APP_URL }
           }
-        ]]
+        ]],
+        resize_keyboard: true,
+        one_time_keyboard: true
       }
     });
   }
 });
 
-// ✅ Отдельная команда /startapp — тоже для группы
+// ✅ Отдельная команда /startapp — только для группы, с reply-кнопкой
 bot.command("startapp", (ctx) => {
   return ctx.reply("Нажмите кнопку ниже, чтобы открыть форму:", {
     reply_markup: {
-      inline_keyboard: [[
+      keyboard: [[
         {
           text: "📝 Открыть форму",
           web_app: { url: process.env.WEB_APP_URL }
         }
-      ]]
+      ]],
+      resize_keyboard: true,
+      one_time_keyboard: true
     }
   });
 });
@@ -83,3 +87,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Webhook сервер слушает порт ${PORT}`);
 });
+
